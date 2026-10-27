@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,6 +7,42 @@ export const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
 export const pluginsRoot = resolve(repositoryRoot, '..', 'plugins');
 const omitted = new Set(['.git', '.local', 'node_modules', 'dist', 'coverage']);
 const omittedPaths = ['client/release/', 'client/public/generated/'];
+
+function ignorePatternRegex(pattern: string): RegExp {
+  const anchored = pattern.startsWith('/');
+  const source = anchored ? pattern.slice(1) : pattern;
+  let regex = '';
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i]!;
+    if (char === '*') {
+      if (source[i + 1] === '*') {
+        regex += '.*';
+        i++;
+      } else regex += '[^/]*';
+    } else if (char === '?') regex += '[^/]';
+    else regex += /[\\.^$+{}()|[\]]/.test(char) ? `\\${char}` : char;
+  }
+  const prefix = anchored || source.includes('/') ? '^' : '^(?:[^/]+/)*';
+  return new RegExp(`${prefix}${regex}(?:/.*)?$`);
+}
+
+function ignoredByRootGitignore(root: string, file: string): boolean | undefined {
+  let contents: string;
+  try {
+    contents = readFileSync(join(root, '.gitignore'), 'utf8');
+  } catch {
+    return undefined;
+  }
+  let decision: boolean | undefined;
+  for (const raw of contents.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const negated = line.startsWith('!');
+    const pattern = (negated ? line.slice(1) : line).replace(/\/$/, '');
+    if (ignorePatternRegex(pattern).test(file)) decision = !negated;
+  }
+  return decision;
+}
 
 /** Git includes untracked source files; extracted source archives work without Git as well. */
 export function sourceFiles(root = repositoryRoot): string[] {
@@ -31,6 +67,8 @@ export function sourceFiles(root = repositoryRoot): string[] {
         .filter(Boolean);
       const ignored = new Set(
         untracked.filter((file) => {
+          const localDecision = ignoredByRootGitignore(root, file);
+          if (localDecision !== undefined) return localDecision;
           try {
             execFileSync('git', ['check-ignore', '--no-index', '--', file], {
               cwd: root,
