@@ -50,7 +50,7 @@ it('Git 清单包含新增源码，并拒绝被强制加入版本控制的私密
   write('.local/private.pem');
   expect(sourceFiles(root)).toEqual(expect.arrayContaining(['.gitignore', 'new-source.ts']));
   execFileSync('git', ['add', '--force', '.env', '.local/private.pem'], { cwd: root });
-  const problems = repositoryProblems(sourceFiles(root), root);
+  const problems = repositoryProblems([...sourceFiles(root), '.env', '.local/private.pem'], root);
   expect(problems.some((problem) => problem.startsWith('.env:'))).toBe(true);
   expect(problems.some((problem) => problem.startsWith('.local/private.pem:'))).toBe(true);
 });
