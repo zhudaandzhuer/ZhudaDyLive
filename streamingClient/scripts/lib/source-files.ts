@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
+import { existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,52 +7,6 @@ export const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
 export const pluginsRoot = resolve(repositoryRoot, '..', 'plugins');
 const omitted = new Set(['.git', '.local', 'node_modules', 'dist', 'coverage']);
 const omittedPaths = ['client/release/', 'client/public/generated/'];
-
-function ignorePatternRegex(pattern: string): RegExp {
-  const anchored = pattern.startsWith('/');
-  const source = anchored ? pattern.slice(1) : pattern;
-  let regex = '';
-  for (let i = 0; i < source.length; i++) {
-    const char = source[i]!;
-    if (char === '*') {
-      if (source[i + 1] === '*') {
-        regex += '.*';
-        i++;
-      } else regex += '[^/]*';
-    } else if (char === '?') regex += '[^/]';
-    else regex += /[\\.^$+{}()|[\]]/.test(char) ? `\\${char}` : char;
-  }
-  const prefix = anchored || source.includes('/') ? '^' : '^(?:[^/]+/)*';
-  return new RegExp(`${prefix}${regex}(?:/.*)?$`);
-}
-
-function isKnownIgnored(file: string): boolean {
-  const parts = file.split('/');
-  return (
-    parts.some((part) => omitted.has(part)) ||
-    (parts.some((part) => /^\.env(?:\.|$)/.test(part)) && file !== '.env.example') ||
-    omittedPaths.some((prefix) => file.startsWith(prefix)) ||
-    /\.(?:zip|dmg|exe|sqlite(?:3)?(?:-wal|-shm)?|db|log)$/i.test(file)
-  );
-}
-
-function ignoredByRootGitignore(root: string, file: string): boolean | undefined {
-  let contents: string;
-  try {
-    contents = readFileSync(join(root, '.gitignore'), 'utf8');
-  } catch {
-    return undefined;
-  }
-  let decision: boolean | undefined;
-  for (const raw of contents.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line || line.startsWith('#')) continue;
-    const negated = line.startsWith('!');
-    const pattern = (negated ? line.slice(1) : line).replace(/\/$/, '');
-    if (ignorePatternRegex(pattern).test(file)) decision = !negated;
-  }
-  return decision;
-}
 
 /** Git includes untracked source files; extracted source archives work without Git as well. */
 export function sourceFiles(root = repositoryRoot): string[] {
@@ -63,36 +17,18 @@ export function sourceFiles(root = repositoryRoot): string[] {
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
     if (realpathSync(top) === realpathSync(root)) {
-      const cached = execFileSync('git', ['ls-files', '--cached', '-z'], {
-        cwd: root,
-        encoding: 'utf8',
-      })
-        .split('\0')
-        .filter(Boolean);
-      const untracked = execFileSync('git', ['ls-files', '--others', '-z'], {
-        cwd: root,
-        encoding: 'utf8',
-      })
-        .split('\0')
-        .filter(Boolean);
-      const ignored = new Set(
-        untracked.filter((file) => {
-          if (isKnownIgnored(file)) return true;
-          const localDecision = ignoredByRootGitignore(root, file);
-          if (localDecision !== undefined) return localDecision;
-          try {
-            execFileSync('git', ['check-ignore', '--no-index', '--', file], {
-              cwd: root,
-              stdio: 'ignore',
-            });
-            return true;
-          } catch {
-            return false;
-          }
-        }),
-      );
-      const files = [...new Set([...cached, ...untracked.filter((file) => !ignored.has(file))])];
-      return files.filter((file) => existsSync(join(root, file))).sort();
+      return [
+        ...new Set(
+          execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {
+            cwd: root,
+            encoding: 'utf8',
+          })
+            .split('\0')
+            .filter(Boolean),
+        ),
+      ]
+        .filter((file) => existsSync(join(root, file)))
+        .sort();
     }
   } catch {
     /* A source ZIP intentionally has no .git directory. */
