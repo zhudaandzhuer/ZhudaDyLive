@@ -33,13 +33,13 @@ export function sourceFiles(root = repositoryRoot): string[] {
       if (untracked.length) {
         try {
           ignored = new Set(
-            execFileSync('git', ['check-ignore', '--stdin', '--no-index', '-z'], {
+            execFileSync('git', ['check-ignore', '--stdin', '--no-index'], {
               cwd: root,
-              input: untracked.join('\0') + '\0',
+              input: untracked.join('\n') + '\n',
               encoding: 'utf8',
               stdio: ['pipe', 'pipe', 'ignore'],
             })
-              .split('\0')
+              .split(/\r?\n/)
               .filter(Boolean),
           );
         } catch {
