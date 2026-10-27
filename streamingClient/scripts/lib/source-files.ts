@@ -29,23 +29,19 @@ export function sourceFiles(root = repositoryRoot): string[] {
       })
         .split('\0')
         .filter(Boolean);
-      let ignored = new Set<string>();
-      if (untracked.length) {
-        try {
-          ignored = new Set(
-            execFileSync('git', ['check-ignore', '--stdin', '--no-index'], {
+      const ignored = new Set(
+        untracked.filter((file) => {
+          try {
+            execFileSync('git', ['check-ignore', '--no-index', '--', file], {
               cwd: root,
-              input: untracked.join('\n') + '\n',
-              encoding: 'utf8',
-              stdio: ['pipe', 'pipe', 'ignore'],
-            })
-              .split(/\r?\n/)
-              .filter(Boolean),
-          );
-        } catch {
-          /* Git exits 1 when no paths are ignored. */
-        }
-      }
+              stdio: 'ignore',
+            });
+            return true;
+          } catch {
+            return false;
+          }
+        }),
+      );
       const files = [...new Set([...cached, ...untracked.filter((file) => !ignored.has(file))])];
       return files.filter((file) => existsSync(join(root, file))).sort();
     }
