@@ -17,18 +17,37 @@ export function sourceFiles(root = repositoryRoot): string[] {
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
     if (realpathSync(top) === realpathSync(root)) {
-      return [
-        ...new Set(
-          execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {
-            cwd: root,
-            encoding: 'utf8',
-          })
-            .split('\0')
-            .filter(Boolean),
-        ),
-      ]
-        .filter((file) => existsSync(join(root, file)))
-        .sort();
+      const cached = execFileSync('git', ['ls-files', '--cached', '-z'], {
+        cwd: root,
+        encoding: 'utf8',
+      })
+        .split('\0')
+        .filter(Boolean);
+      const untracked = execFileSync('git', ['ls-files', '--others', '-z'], {
+        cwd: root,
+        encoding: 'utf8',
+      })
+        .split('\0')
+        .filter(Boolean);
+      let ignored = new Set<string>();
+      if (untracked.length) {
+        try {
+          ignored = new Set(
+            execFileSync('git', ['check-ignore', '--stdin', '--no-index', '-z'], {
+              cwd: root,
+              input: untracked.join('\0') + '\0',
+              encoding: 'utf8',
+              stdio: ['pipe', 'pipe', 'ignore'],
+            })
+              .split('\0')
+              .filter(Boolean),
+          );
+        } catch {
+          /* Git exits 1 when no paths are ignored. */
+        }
+      }
+      const files = [...new Set([...cached, ...untracked.filter((file) => !ignored.has(file))])];
+      return files.filter((file) => existsSync(join(root, file))).sort();
     }
   } catch {
     /* A source ZIP intentionally has no .git directory. */
