@@ -26,6 +26,16 @@ function ignorePatternRegex(pattern: string): RegExp {
   return new RegExp(`${prefix}${regex}(?:/.*)?$`);
 }
 
+function isKnownIgnored(file: string): boolean {
+  const parts = file.split('/');
+  return (
+    parts.some((part) => omitted.has(part)) ||
+    (parts.some((part) => /^\.env(?:\.|$)/.test(part)) && file !== '.env.example') ||
+    omittedPaths.some((prefix) => file.startsWith(prefix)) ||
+    /\.(?:zip|dmg|exe|sqlite(?:3)?(?:-wal|-shm)?|db|log)$/i.test(file)
+  );
+}
+
 function ignoredByRootGitignore(root: string, file: string): boolean | undefined {
   let contents: string;
   try {
@@ -67,6 +77,7 @@ export function sourceFiles(root = repositoryRoot): string[] {
         .filter(Boolean);
       const ignored = new Set(
         untracked.filter((file) => {
+          if (isKnownIgnored(file)) return true;
           const localDecision = ignoredByRootGitignore(root, file);
           if (localDecision !== undefined) return localDecision;
           try {
