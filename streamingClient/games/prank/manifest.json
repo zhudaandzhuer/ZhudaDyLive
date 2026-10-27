@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "apiVersion": 1,
+  "id": "prank.stage",
+  "version": "0.3.7",
+  "name": "整蛊舞台",
+  "description": "观众触发舞台抖动与趣味提示，所有效果仅出现在输出画面。",
+  "category": "prank",
+  "entry": "index.html",
+  "initial": "1000",
+  "accent": "#c8b3f1",
+  "rules": [
+    {
+      "giftId": "2001",
+      "giftName": "玫瑰",
+      "delta": -10,
+      "eventId": "shake",
+      "amount": 10
+    },
+    {
+      "giftId": "685",
+      "giftName": "粉丝团灯牌",
+      "delta": 100,
+      "eventId": "reverse",
+      "amount": 100
+    },
+    {
+      "giftId": "16075",
+      "giftName": "给到夯",
+      "delta": -100,
+      "eventId": "shake",
+      "amount": 100
+    }
+  ],
+  "events": [
+    {
+      "id": "shake",
+      "label": "舞台震动",
+      "description": "震动输出舞台，并减少挑战进度。",
+      "operation": "subtract",
+      "amountLabel": "减少进度",
+      "unit": "点",
+      "min": 1,
+      "max": 1000000,
+      "default": 10
+    },
+    {
+      "id": "reverse",
+      "label": "反转加码",
+      "description": "舞台短暂翻转，并增加挑战进度。",
+      "operation": "add",
+      "amountLabel": "增加进度",
+      "unit": "点",
+      "min": 1,
+      "max": 1000000,
+      "default": 100
+    },
+    {
+      "id": "glitch",
+      "label": "信号故障",
+      "description": "播放舞台信号干扰特效，不改变挑战进度。",
+      "operation": "effect",
+      "amountLabel": "干扰强度",
+      "unit": "级",
+      "min": 1,
+      "max": 10,
+      "default": 3
+    }
+  ],
+  "themes": [
+    {
+      "id": "default",
+      "name": "原版舞台",
+      "description": "经典紫色整蛊舞台。",
+      "accent": "#c8b3f1"
+    }
+  ],
+  "defaultTheme": "default"
+}

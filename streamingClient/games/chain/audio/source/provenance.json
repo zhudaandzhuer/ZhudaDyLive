@@ -1,0 +1,28 @@
+{
+  "method": "Deterministic procedural metal foley synthesis",
+  "source": "scripts/chain-foley.ts",
+  "description": "Bind: short bright metal-on-metal link contacts without a heavy latch hit or hollow low resonance. Dissolve: filtered friction hiss only, without rupture or loose-link impacts. No music, voices, recorded samples or SoundFont.",
+  "review_status": "needs_listening",
+  "audio": [
+    {
+      "file": "chain-bind.wav",
+      "sha256": "c7e0224b396d236fb5308d3864d30cc0f56033bd3c5f2866dbcb41a088f1fdef",
+      "bytes": 92204,
+      "sampleRate": 48000,
+      "channels": 2,
+      "seconds": 0.48,
+      "peak": 0.65,
+      "rmsDb": -25.23843653332584
+    },
+    {
+      "file": "chain-fracture.wav",
+      "sha256": "7faa4d91696c3e892701ae55f9147faaf826e279079483631c9065fa4f627d14",
+      "bytes": 134444,
+      "sampleRate": 48000,
+      "channels": 2,
+      "seconds": 0.7,
+      "peak": 0.3,
+      "rmsDb": -26.028004255565612
+    }
+  ]
+}

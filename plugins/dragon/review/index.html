@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>猪大 VS 恶龙 · 保留版试玩</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script src="/src/demo.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <strong>猪大 VS 恶龙</strong><span>v2.2.1 · 本机独立试玩 · 方形静态确认版</span>
+    </header>
+    <main>
+      <section class="preview">
+        <div class="screen-label"><span>1080 × 1080</span><button id="clean">只看画面</button></div>
+        <div class="stage-wrap">
+          <iframe
+            id="game"
+            title="猪大 VS 恶龙游戏画面"
+            src="/plugin/index.html"
+            sandbox="allow-scripts"
+            allow="autoplay"
+          ></iframe>
+        </div>
+      </section>
+      <aside>
+        <h1>支持你的阵营</h1>
+        <p>模拟礼物调整属性，倒计时结束后自动交战。上方原画和下方角色面板独立换皮。</p>
+        <div class="camps">
+          <section>
+            <h2>猪大</h2>
+            <button data-event="hero-health">生命 +160</button
+            ><button data-event="hero-attack">攻击 +40</button
+            ><button data-event="hero-defense">防御 +40</button
+            ><button data-event="hero-speed">速度 +10</button>
+          </section>
+          <section>
+            <h2>恶龙</h2>
+            <button data-event="dragon-health">生命 +160</button
+            ><button data-event="dragon-attack">攻击 +40</button
+            ><button data-event="dragon-defense">防御 +40</button
+            ><button data-event="dragon-speed">速度 +10</button>
+          </section>
+        </div>
+        <label
+          >每次模拟份数<input id="quantity" type="number" min="1" max="1000" value="1"
+        /></label>
+        <label
+          >备战时间<select id="interval">
+            <option value="20">20 秒</option>
+            <option value="10">10 秒</option>
+            <option value="5">5 秒</option>
+            <option value="30">30 秒</option>
+          </select></label
+        >
+        <div class="status"><span id="status">连接中</span><span id="match"></span></div>
+        <div class="actions">
+          <button id="pause">暂停</button><button id="reset">重新开始</button>
+        </div>
+        <p id="feedback" role="status">这里只接收模拟礼物。</p>
+        <a href="/dist/plugin.dragon-2.2.1.zip">保留版插件 ZIP</a>
+      </aside>
+    </main>
+  </body>
+</html>

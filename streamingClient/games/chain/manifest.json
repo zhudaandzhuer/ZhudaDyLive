@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "apiVersion": 1,
+  "id": "game.chain",
+  "version": "0.8.7",
+  "name": "解锁挑战",
+  "description": "观众用礼物增加或消除锁链，一起把剩余数量降到零。",
+  "category": "game",
+  "entry": "index.html",
+  "initial": "1",
+  "accent": "#d8f68b",
+  "rules": [
+    {
+      "giftId": "685",
+      "giftName": "粉丝团灯牌",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "164",
+      "giftName": "抖音",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "2001",
+      "giftName": "玫瑰",
+      "delta": -1,
+      "eventId": "unlock",
+      "amount": 1
+    },
+    {
+      "giftId": "2006",
+      "giftName": "鲜花",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "16075",
+      "giftName": "给到夯",
+      "delta": -1,
+      "eventId": "unlock",
+      "amount": 1
+    },
+    {
+      "giftId": "6533",
+      "giftName": "龙抬头",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "3447",
+      "giftName": "亲吻",
+      "delta": -1,
+      "eventId": "unlock",
+      "amount": 1
+    },
+    {
+      "giftId": "2114",
+      "giftName": "礼花筒",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "781",
+      "giftName": "比心",
+      "delta": -1,
+      "eventId": "unlock",
+      "amount": 1
+    },
+    {
+      "giftId": "5831",
+      "giftName": "一束花开",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "5633",
+      "giftName": "真爱玫瑰",
+      "delta": -1,
+      "eventId": "unlock",
+      "amount": 1
+    },
+    {
+      "giftId": "3773",
+      "giftName": "热气球",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    },
+    {
+      "giftId": "3483",
+      "giftName": "真的爱你",
+      "delta": -1,
+      "eventId": "unlock",
+      "amount": 1
+    },
+    {
+      "giftId": "4353",
+      "giftName": "跑车",
+      "delta": 1,
+      "eventId": "lock",
+      "amount": 1
+    }
+  ],
+  "events": [
+    {
+      "id": "lock",
+      "label": "添加锁链",
+      "description": "绑上指定数量的锁链，播放逐根绑合特效。",
+      "operation": "add",
+      "amountLabel": "添加根数",
+      "unit": "根",
+      "min": 1,
+      "max": 1000000,
+      "default": 1
+    },
+    {
+      "id": "unlock",
+      "label": "解开锁链",
+      "description": "解开指定数量的锁链，播放断裂、闪亮与熔化特效。",
+      "operation": "subtract",
+      "amountLabel": "解开根数",
+      "unit": "根",
+      "min": 1,
+      "max": 1000000,
+      "default": 1
+    }
+  ],
+  "themes": [
+    {
+      "id": "classic",
+      "name": "原版钢链",
+      "description": "细致钢链沿两侧与下半部随机交错，保留脸部空间与金属熔解特效。",
+      "accent": "#d8f68b"
+    },
+    {
+      "id": "monochrome",
+      "name": "黑白粗链",
+      "description": "亮银与黑铁大链环混合，厚实金属质感。",
+      "accent": "#c9d3df"
+    },
+    {
+      "id": "plush",
+      "name": "粉色玩偶",
+      "description": "柔软粉色布偶链环、缝线、小熊与蝴蝶结。",
+      "accent": "#f7a3cc"
+    }
+  ],
+  "defaultTheme": "classic"
+}

@@ -1,0 +1,62 @@
+{
+  "name": "zhuda-live",
+  "version": "0.3.2",
+  "private": true,
+  "type": "module",
+  "description": "猪大直播工作台 — 本机采集、场景搭建与插件平台",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "workspaces": [
+    "client",
+    "packages/*"
+  ],
+  "scripts": {
+    "setup": "tsx scripts/setup.ts",
+    "dev": "tsx scripts/dev.ts",
+    "build": "tsx scripts/build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "smoke:controls": "tsx scripts/smoke-controls.ts",
+    "smoke:collector": "tsx scripts/smoke-collector.ts",
+    "package": "tsx scripts/package.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "locale:check": "tsx scripts/check-locale.ts",
+    "build:production": "tsx scripts/build-production.ts",
+    "repo:check": "tsx scripts/check-repository.ts",
+    "source:archive": "npm run repo:check && tsx scripts/export-source.ts",
+    "check": "npm run format:check && npm run repo:check && npm run typecheck && npm run locale:check && npm test",
+    "audio:generate": "tsx scripts/chain-foley.ts && tsx scripts/sewing-foley.ts"
+  },
+  "dependencies": {
+    "fflate": "0.8.3",
+    "opencc-js": "^1.4.2",
+    "protobufjs": "8.8.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^26.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "44.9.0",
+    "esbuild": "0.28.2",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  },
+  "license": "MIT",
+  "keywords": [
+    "electron",
+    "typescript",
+    "livestream",
+    "scene-editor",
+    "plugins"
+  ]
+}

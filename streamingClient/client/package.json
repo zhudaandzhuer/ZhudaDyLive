@@ -1,0 +1,15 @@
+{
+  "name": "@zhuda/client",
+  "version": "0.3.2",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.cjs",
+  "dependencies": {
+    "@zhuda/contracts": "*",
+    "@zhuda/core": "*",
+    "qrcode": "^1.5.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "license": "MIT"
+}

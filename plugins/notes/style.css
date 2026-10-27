@@ -1,0 +1,92 @@
+:root {
+  color-scheme: dark;
+  font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+  color: #eaf0e4;
+  background: #151c17;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 960px;
+  padding: 32px 36px;
+  margin: auto;
+}
+header span {
+  color: #a0b980;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+h1 {
+  font-size: 28px;
+  margin: 12px 0;
+}
+header p {
+  font-size: 13px;
+  color: #95a28e;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+textarea {
+  resize: vertical;
+  min-height: 270px;
+  width: 100%;
+  border: 1px solid #374330;
+  border-radius: 12px;
+  padding: 20px;
+  color: #edf3e7;
+  background: #101611;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.9;
+}
+textarea:focus {
+  outline: 1px solid #d8f68b;
+}
+textarea::placeholder {
+  color: #63765e;
+}
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 14px;
+}
+#status {
+  color: #8f9f84;
+  font-size: 12px;
+}
+button {
+  border: 0;
+  border-radius: 8px;
+  color: #1b2413;
+  background: #d8f68b;
+  padding: 11px 20px;
+  cursor: pointer;
+  font-weight: 700;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  main {
+    padding: 24px 18px;
+  }
+  h1 {
+    font-size: 23px;
+  }
+}

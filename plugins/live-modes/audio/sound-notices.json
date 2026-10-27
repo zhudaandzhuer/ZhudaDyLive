@@ -1,0 +1,43 @@
+{
+  "title": "缝纫机拟音",
+  "method": "原创程序合成布料摩擦、机针与电机、收线剪线声",
+  "source": "scripts/sewing-foley.ts",
+  "samples": "未使用外部采样、音乐或人声",
+  "cues": {
+    "supply": "布料入库摩擦",
+    "machine": "机针与送料机构运转",
+    "finish": "停机收线剪线"
+  },
+  "audio": [
+    {
+      "file": "sewing-supply.wav",
+      "seconds": 0.72,
+      "bytes": 138284,
+      "sampleRate": 48000,
+      "channels": 2,
+      "sha256": "66a7fadee53fc10608ead2d651cb071cd93e3e09b406a6c6654607ce215cc165",
+      "peak": 0.5,
+      "rmsDb": -25.18788513018032
+    },
+    {
+      "file": "sewing-machine.wav",
+      "seconds": 0.54,
+      "bytes": 103724,
+      "sampleRate": 48000,
+      "channels": 2,
+      "sha256": "357cc1031ac94e75176e69e3605c0e5503c6ff4e85be94f44c6016d50517941d",
+      "peak": 0.6,
+      "rmsDb": -25.129897682880138
+    },
+    {
+      "file": "sewing-finish.wav",
+      "seconds": 0.65,
+      "bytes": 124844,
+      "sampleRate": 48000,
+      "channels": 2,
+      "sha256": "4c00f0e15ffcc09964fa185629e2cf8a3bed10b9ed886d3d18267c5b0e165289",
+      "peak": 0.5,
+      "rmsDb": -28.755258881434926
+    }
+  ]
+}

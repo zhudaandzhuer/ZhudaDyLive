@@ -1,0 +1,88 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#source {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+#source > div,
+#source > img,
+#source > video {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#source > div {
+  font-family: system-ui, 'Microsoft YaHei', sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+  padding: 8px;
+}
+#source > .instructions {
+  padding: 0.6em;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  white-space: normal;
+  height: auto;
+  overflow: visible;
+  transform-origin: top left;
+}
+.instructions h2 {
+  margin: 0 0 0.5em;
+  font-size: 0.85em;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+.instruction-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9em, 100%), 1fr));
+  gap: 0.5em;
+}
+.instructions[data-layout='vertical'] .instruction-list {
+  grid-template-columns: 1fr;
+}
+.instruction-row {
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+  padding: 0.5em;
+  border-radius: 0.65em;
+}
+.instructions[data-panel='true'] .instruction-row {
+  background: #101613dd;
+  border: 1px solid #ffffff28;
+}
+.instruction-row > div {
+  min-width: 0;
+}
+.instruction-row strong {
+  display: block;
+  font-size: 0.75em;
+  font-weight: 500;
+}
+.instruction-row div > span {
+  display: block;
+  margin-top: 0.2em;
+  color: var(--accent);
+  font-weight: 800;
+}
+.gift-icon {
+  display: grid;
+  place-items: center;
+  width: 1.9em;
+  height: 1.9em;
+  flex: 0 0 1.9em;
+}
+.gift-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

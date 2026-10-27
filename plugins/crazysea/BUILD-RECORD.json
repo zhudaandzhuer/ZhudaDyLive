@@ -1,0 +1,29 @@
+{
+  "pluginId": "plugin.crazysea",
+  "version": "1.1.0",
+  "minAppVersion": "0.3.2",
+  "builtAt": "2026-10-25T10:15:53.266Z",
+  "archive": "plugin.crazysea-1.1.0.zip",
+  "bytes": 217853,
+  "sha256": "11124d115ba9dc81b1d1f2d08f39c0cd111e706e73acd2ec55b521699b3bb8ad",
+  "entryPoints": [
+    "workspace/app.js"
+  ],
+  "buildCommand": "node scripts/build-plugin.mjs",
+  "includedFiles": [
+    "plugin.json",
+    "index.html",
+    "app.js",
+    "style.css",
+    "assets/sea-mark.svg"
+  ],
+  "securityChecks": {
+    "singleIIFE": true,
+    "noEval": true,
+    "noFunctionConstructor": true,
+    "noDebugger": true,
+    "noNetworkAPIs": true,
+    "noDebugGlobals": true,
+    "allAssetsLocal": true
+  }
+}

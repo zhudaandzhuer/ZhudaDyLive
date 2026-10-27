@@ -1,0 +1,16 @@
+name: 功能建议
+description: 描述使用场景与预期行为
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决什么问题
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 希望如何使用
+      description: 如果是新玩法，请说明能否作为插件提供。
+    validations:
+      required: true

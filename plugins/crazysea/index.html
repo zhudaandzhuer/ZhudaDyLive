@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>《疯狂海世界》直播弹幕互动游戏</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="default">
+  <div id="game-viewport">
+    <!-- 主游戏渲染画布 (渲染动态粒子、投掷物、木条、核弹蘑菇云与3D物理模型) -->
+    <canvas id="world-canvas" width="1080" height="1920"></canvas>
+
+    <!-- 乌贼喷墨干扰画布 (顶层可擦拭) -->
+    <canvas id="ink-canvas" width="1080" height="1920"></canvas>
+
+    <!-- UI 覆盖层 -->
+    <div id="ui-layer">
+      <!-- 顶部 6 阶段融合进度仪表板 -->
+      <header class="header-dashboard">
+        <div class="dashboard-top-row">
+          <div class="game-logo-badge">
+            <img class="game-logo-mark" src="assets/sea-mark.svg" alt="" aria-hidden="true">
+            <h1>疯狂海世界</h1>
+            <!-- 只有到达大游轮才会显示主播下班 -->
+            <span id="victory-off-duty-pill" class="off-duty-pill hidden">🎉 恭喜主播成功下班！</span>
+          </div>
+          <div class="wood-counter-pill">
+            <span class="wood-icon">🪵</span>
+            <span id="current-wood" class="current-wood-num">0</span>
+            <span class="wood-slash">/</span>
+            <span id="target-wood-text" class="target-wood-num">100,000</span>
+          </div>
+          <div id="mode-status-badge" class="mode-badge plugin-local" title="本机插件">
+            <span class="mb-text">本机插件</span>
+          </div>
+        </div>
+
+        <!-- 6 种等级小 icon 与进度条深度融合 Stepper (默认木筏亮著，随升级提升) -->
+        <div class="stages-stepper-wrap">
+          <!-- 横贯背景进度轨道 -->
+          <div class="stepper-track-bg">
+            <div id="stepper-fill" class="stepper-track-fill"></div>
+          </div>
+
+          <!-- 6 个等级节点 (默认木筏亮著) -->
+          <div class="stepper-nodes">
+            <!-- 等级 0: 木筏 (0 根) -->
+            <div id="node-stage-0" class="stage-node unlocked active" data-level="0" data-threshold="0">
+              <div class="node-icon-circle">
+                <span class="node-icon">🪵</span>
+              </div>
+              <div class="node-info">
+                <span class="node-name">木筏</span>
+                <span class="node-req">0</span>
+              </div>
+            </div>
+
+            <!-- 等级 1: 木船 (100 根) -->
+            <div id="node-stage-1" class="stage-node" data-level="1" data-threshold="100">
+              <div class="node-icon-circle">
+                <span class="node-icon">🛶</span>
+              </div>
+              <div class="node-info">
+                <span class="node-name">木船</span>
+                <span class="node-req">100</span>
+              </div>
+            </div>
+
+            <!-- 等级 2: 大木船 (1000 根，独立空间) -->
+            <div id="node-stage-2" class="stage-node" data-level="2" data-threshold="1000">
+              <div class="node-icon-circle">
+                <span class="node-icon">⛵</span>
+              </div>
+              <div class="node-info">
+                <span class="node-name">大木船</span>
+                <span class="node-req">1,000</span>
+              </div>
+            </div>
+
+            <!-- 等级 3: 铁皮船 (5000 根，外观有钢铁，独立船长室) -->
+            <div id="node-stage-3" class="stage-node" data-level="3" data-threshold="5000">
+              <div class="node-icon-circle">
+                <span class="node-icon">🚢</span>
+              </div>
+              <div class="node-info">
+                <span class="node-name">铁皮船</span>
+                <span class="node-req">5,000</span>
+              </div>
+            </div>
+
+            <!-- 等级 4: 多层铁皮屋 (10000 根，美女室友) -->
+            <div id="node-stage-4" class="stage-node" data-level="4" data-threshold="10000">
+              <div class="node-icon-circle">
+                <span class="node-icon">🏠</span>
+              </div>
+              <div class="node-info">
+                <span class="node-name" title="多层铁皮屋">铁皮屋</span>
+                <span class="node-req">10,000</span>
+              </div>
+            </div>
+
+            <!-- 等级 5: 大游轮 (100000 根，主播下班) -->
+            <div id="node-stage-5" class="stage-node node-cruise" data-level="5" data-threshold="100000">
+              <div class="node-icon-circle">
+                <span class="node-icon">🛳️</span>
+              </div>
+              <div class="node-info">
+                <span class="node-name">大游轮</span>
+                <span class="node-req">100,000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 烟雾减速覆盖层 (丢烟雾时激活) -->
+      <div id="smoke-overlay" class="smoke-overlay">
+        <div class="smoke-badge">💨 烟雾弥漫！光标速度减慢 50%！</div>
+      </div>
+
+      <!-- 猪大钓鱼收线 QTE 控制面板 (不需要按钮，主播点屏幕或 Space 都行) -->
+      <div id="fishing-qte-panel" class="fishing-qte-panel">
+        <!-- 海带遮住面板覆盖层 (丢海带时覆盖) -->
+        <div id="panel-kelp-overlay" class="panel-kelp-overlay">
+          <div class="kelp-banner">🌿 湿滑海带遮住了钓鱼面板，稍后自动滑落！</div>
+        </div>
+
+        <!-- 跑跑卡丁车式经典 Timing Track 轨道 (无黄色区，绿色命中区每次命中换位置) -->
+        <div class="ft-track-wrap">
+          <div class="ft-track">
+            <!-- 脱钩没命中区 (红色) -->
+            <div class="ft-zone ft-zone-miss"></div>
+            <!-- 唯一绿色命中区 (命中时随机换位置) -->
+            <div id="fq-hitzone" class="ft-zone ft-zone-hit"></div>
+            <!-- 往返动态发光指针 -->
+            <div id="fishing-pointer" class="ft-pointer">
+              <div class="ft-pointer-head"></div>
+              <div class="ft-pointer-needle"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 即时反馈标签 -->
+        <div id="fq-feedback" class="fq-feedback">
+          🎯 点屏幕收线，瞄准绿色区！
+        </div>
+      </div>
+
+      <!-- 左右两侧即时榜单 -->
+      <div class="leaderboards-container">
+        <!-- 左侧：拆家榜 -->
+        <div class="leaderboard-card demolition">
+          <div class="card-title demolition">
+            <span>💣 拆家大哥榜</span>
+            <small>摧毁木头</small>
+          </div>
+          <div id="demolition-rank-list" class="rank-list">
+            <div class="rank-item empty"><span>等待拆家挑战者...</span></div>
+          </div>
+        </div>
+
+        <!-- 右侧：护航榜 -->
+        <div class="leaderboard-card assist">
+          <div class="card-title assist">
+            <span>🚰 护航大哥榜</span>
+            <small>帮盖木头</small>
+          </div>
+          <div id="assist-rank-list" class="rank-list">
+            <div class="rank-item empty"><span>等待护航守护者...</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 紧凑送礼通知卡片 (V2-R1)：角落/榜单旁精致展示，完全不遮挡游戏本体 -->
+      <div id="gift-impact-flash" aria-hidden="true"></div>
+      <div id="gift-cinematic" aria-live="polite" aria-atomic="true" aria-hidden="true">
+        <div class="gift-emblem" id="gift-emblem" aria-hidden="true">★</div>
+        <div class="gift-copy">
+          <div class="gift-title-line">
+            <span id="gift-sender">海洋守护者</span>
+            <span class="gift-from-text">送出</span>
+            <strong id="gift-title">幸运海星</strong>
+            <span id="gift-combo">×1</span>
+          </div>
+          <div id="gift-detail">幸运降临</div>
+        </div>
+        <div class="gift-sheen" aria-hidden="true"></div>
+      </div>
+      <div id="announcement-banner">
+        <span id="announcement-icon">💥</span>
+        <span id="announcement-text">感谢送出礼物！</span>
+      </div>
+
+      <!-- 海草干扰反制提示浮层 -->
+      <div id="seaweed-alert" class="interference-alert">
+        <div class="interference-title">🌿 主播被海草缠住啦！无法敲钉子！</div>
+        <div class="interference-action">连按空白键 (Space) 或连点屏幕挣脱！</div>
+        <div class="struggle-meter">
+          <div id="struggle-fill" class="struggle-fill"></div>
+        </div>
+      </div>
+
+      <!-- 乌贼墨汁反制提示浮层 -->
+      <div id="ink-alert" class="interference-alert">
+        <div class="interference-title">🦑 视线受阻！巨型乌贼喷出大片墨汁！</div>
+        <div class="interference-action">快速晃动或拖曳鼠标擦拭屏幕！</div>
+      </div>
+
+      <!-- 全屏幕核弹红光警报 -->
+      <div id="nuke-alarm-overlay">
+        <div class="nuke-warning-box">
+          <div class="nuke-reticle" aria-hidden="true">☢</div>
+          <div class="nuke-alert-label">紧急警报 · 全岛锁定</div>
+          <h2>终极核弹来袭</h2>
+          <div class="nuke-countdown" aria-hidden="true"><span>02</span><span>01</span></div>
+          <p>2 秒后引爆 · 全岛木头清零</p>
+        </div>
+      </div>
+
+      <!-- 胜利下班结算弹窗 -->
+      <div id="victory-modal">
+        <div class="victory-card">
+          <h2>🎉 恭喜主播成功下班！</h2>
+          <p>今日海上豪华海景房圆满落成，感谢所有护航大哥的守护！</p>
+          <div class="victory-stats">
+            <div class="victory-stat-item">
+              <h3>最终木头数</h3>
+              <span id="victory-wood">1,000</span>
+            </div>
+            <div class="victory-stat-item">
+              <h3>最终楼层</h3>
+              <span id="victory-floor">101 层</span>
+            </div>
+            <div class="victory-stat-item">
+              <h3>扛住轰炸次数</h3>
+              <span id="victory-bombs">0 次</span>
+            </div>
+          </div>
+          <div class="victory-actions">
+            <button id="victory-continue-btn" class="victory-btn primary">继续挑战更高层 (加目标)</button>
+            <button id="victory-close-btn" class="victory-btn secondary">关闭面板 (原地庆祝)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主播极简后台设置面板 (按 P 或齿轮开关) -->
+      <div id="config-modal">
+        <div class="config-card">
+          <div class="config-header">
+            <h2>⚙️ 主播极简设置面板</h2>
+            <button id="close-config-btn" class="close-btn">✕</button>
+          </div>
+
+          <!-- 快速默认档 -->
+          <div class="preset-selector">
+            <button class="preset-btn" data-preset="small">🟢 小主播模式</button>
+            <button class="preset-btn active" data-preset="standard">🟡 标准模式</button>
+            <button class="preset-btn" data-preset="large">🔴 万人直播间模式</button>
+          </div>
+
+          <!-- 全 UI 自由布局系统入口 (V2-R2) -->
+          <div class="config-section layout-section">
+            <button id="btn-open-layout-editor" type="button" class="config-apply-btn">
+              🎨 自定义 UI 布局 (拖动调整各面板位置 · 快捷键 L)
+            </button>
+          </div>
+
+          <!-- 1. 🎯 下班目标设置 -->
+          <div class="config-section">
+            <div class="section-title">🎯 1. 下班目标设置</div>
+            <div class="config-grid">
+              <div class="config-item">
+                <label for="cfg-target-wood">今日盖几块木头下班</label>
+                <input type="number" id="cfg-target-wood" value="100000" min="1" max="1000000">
+              </div>
+            </div>
+          </div>
+
+          <div class="config-section" id="stage-threshold-settings">
+            <div class="section-title">🏠 建筑升级木头数</div>
+            <p class="config-help">填入各阶段所需的累计木头总数，依序递增。木筏从 0 开始。</p>
+            <div class="config-grid">
+              <div class="config-item">
+                <label for="cfg-stage-1">🛶 木船</label>
+                <input type="number" id="cfg-stage-1" required value="100" min="1" max="1000000" step="1">
+              </div>
+              <div class="config-item">
+                <label for="cfg-stage-2">⛵ 大木船／木屋</label>
+                <input type="number" id="cfg-stage-2" required value="1000" min="1" max="1000000" step="1">
+              </div>
+              <div class="config-item">
+                <label for="cfg-stage-3">🚢 铁皮船</label>
+                <input type="number" id="cfg-stage-3" required value="5000" min="1" max="1000000" step="1">
+              </div>
+              <div class="config-item">
+                <label for="cfg-stage-4">🏠 多层海景屋</label>
+                <input type="number" id="cfg-stage-4" required value="10000" min="1" max="1000000" step="1">
+              </div>
+              <div class="config-item">
+                <label for="cfg-stage-5">🛳️ 大游轮</label>
+                <input type="number" id="cfg-stage-5" required value="100000" min="1" max="1000000" step="1">
+              </div>
+            </div>
+            <button id="apply-stage-thresholds" class="config-apply-btn">应用并保存升级门槛</button>
+            <p id="stage-threshold-status" class="config-status" role="status" aria-live="polite"></p>
+          </div>
+
+          <div class="config-section" id="fishing-zone-settings">
+            <div class="section-title">🎯 绿色命中区难度</div>
+            <p class="config-help">最小支持 0.1%。河豚每次缩小 6%，直到设置的最小宽度；清除干扰时恢复起始宽度。</p>
+            <div class="config-grid">
+              <div class="config-item">
+                <label for="cfg-hit-zone-width">起始宽度（%）</label>
+                <input type="number" id="cfg-hit-zone-width" required value="24" min="0.1" max="50" step="0.1">
+              </div>
+              <div class="config-item">
+                <label for="cfg-min-hit-zone-width">最小宽度（%）</label>
+                <input type="number" id="cfg-min-hit-zone-width" required value="0.1" min="0.1" max="50" step="0.1">
+              </div>
+            </div>
+            <button id="apply-hit-zone-settings" class="config-apply-btn">应用并保存命中区</button>
+            <p id="hit-zone-status" class="config-status" role="status" aria-live="polite"></p>
+          </div>
+
+          <!-- 2. 💣 拆家伤害设置 -->
+          <div class="config-section">
+            <div class="section-title">💣 2. 拆家伤害设置（扣几块木头）</div>
+            <div class="config-grid">
+              <div class="config-item">
+                <label>🪨 丢石头扣除</label>
+                <input type="number" id="cfg-stone-dmg" value="5" min="1" max="500">
+              </div>
+              <div class="config-item">
+                <label>🧨 小炸弹扣除</label>
+                <input type="number" id="cfg-small-bomb-dmg" value="20" min="1" max="1000">
+              </div>
+              <div class="config-item">
+                <label>💣 大炸弹扣除</label>
+                <input type="number" id="cfg-big-bomb-dmg" value="100" min="1" max="10000">
+              </div>
+              <div class="config-item">
+                <label>☢️ 终极核弹</label>
+                <div class="fixed-pill">【固定效果：一键清空重置为 0】</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 🛠️ 帮手设置 -->
+          <div class="config-section">
+            <div class="section-title">🛠️ 3. 帮手设置（加几块木头）</div>
+            <div class="config-grid">
+              <div class="config-item">
+                <label>🚰 1级海水过滤器帮盖木头数</label>
+                <input type="number" id="cfg-filter-lv1" value="4" min="1" max="500">
+              </div>
+              <div class="config-item">
+                <label>主播自动敲钉子速度 (次/秒)</label>
+                <input type="number" id="cfg-autotap-speed" value="1" min="0" max="10">
+              </div>
+              <label class="checkbox-item">
+                <input type="checkbox" id="cfg-filter-autoupgrade" checked>
+                <span>随刷随升级（Lv.1 ~ Lv.4，倍数成长暴风帮盖）</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 4. 🎛️ 主题与保底加班模式 -->
+          <div class="config-section">
+            <div class="section-title">🎨 4. 场景风格与保底加班</div>
+            <div class="config-grid">
+              <div class="config-item">
+                <label>场景主题风格</label>
+                <select id="cfg-theme">
+                  <option value="default">末日海世界 (原版)</option>
+                  <option value="sunset">黄昏烈阳 (夕阳战场)</option>
+                  <option value="cyber">赛博深海 (霓虹夜光)</option>
+                </select>
+              </div>
+              <div class="config-item span-2">
+                <button id="toggle-rage-config-btn" class="dock-btn">
+                  🔥 开启狂暴加班模式（5倍敲钉子 + 双倍过滤器冲线）
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="config-section" id="sound-settings">
+            <div class="section-title">🔊 游戏音效</div>
+            <p class="config-help">点一下画面即可启用音效。可随时静音；音量 0 也会完全静音。</p>
+            <div class="config-grid">
+              <div class="config-item">
+                <label for="cfg-sound-volume">音效音量（0～100）</label>
+                <input type="number" id="cfg-sound-volume" value="80" min="0" max="100" step="1">
+              </div>
+              <label class="checkbox-item sound-enabled-control">
+                <input type="checkbox" id="cfg-sound-enabled" checked>
+                <span>开启游戏音效</span>
+              </label>
+            </div>
+            <button id="btn-sound-preview" type="button" class="config-apply-btn">▶ 试听音效</button>
+            <p id="sound-status" class="config-status" role="status">点一下画面，即可开始播放音效。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 手机直播默认收合；触控开关与 H 共用同一个状态。 -->
+      <footer id="control-dock" class="is-collapsed">
+        <button id="toggle-dock-btn" type="button" aria-expanded="false" aria-controls="dock-toolbar" title="展开或收合操作面板（H）">⌃ 展开操作面板</button>
+        <div id="dock-toolbar" class="hidden" aria-label="游戏操作面板" aria-hidden="true" inert>
+        <button id="btn-hammer" class="dock-btn hammer" title="收线拉竿钓木头">
+          🎣 钓木头 <span class="shortcut-hint">Space</span>
+        </button>
+        <button id="btn-bomb" class="dock-btn" title="丢炸弹炸掉木头">
+          💣 丢炸弹 <span class="shortcut-hint">1</span>
+        </button>
+        <button id="btn-smoke" class="dock-btn" title="丢烟雾减慢光标速度">
+          💨 丢烟雾 <span class="shortcut-hint">2</span>
+        </button>
+        <button id="btn-kelp" class="dock-btn" title="丢海带遮住面板">
+          🌿 丢海带 <span class="shortcut-hint">3</span>
+        </button>
+        <button id="btn-puffer" class="dock-btn" title="丢河豚减少命中区范围">
+          🐡 丢河豚 <span class="shortcut-hint">4</span>
+        </button>
+        <button id="btn-starfish" class="dock-btn" title="丢海星增加命中区范围">
+          ⭐ 丢海星 <span class="shortcut-hint">5</span>
+        </button>
+        <button id="btn-clean" class="dock-btn" title="清除所有干扰">
+          🧹 清除 <span class="shortcut-hint">C</span>
+        </button>
+        <button id="btn-nuke" class="dock-btn nuke" title="终极核弹清零">
+          ☢️ 核弹 <span class="shortcut-hint">0</span>
+        </button>
+        <button id="btn-filter" class="dock-btn filter" title="海水过滤器帮盖">
+          🚰 过滤器 <span class="shortcut-hint">F</span>
+        </button>
+        <button id="btn-rage" class="dock-btn" title="狂暴加班模式">
+          🔥 狂暴 <span class="shortcut-hint">R</span>
+        </button>
+        <button id="btn-config" class="dock-btn" title="打开设置面板">
+          ⚙️ 设置 <span class="shortcut-hint">P</span>
+        </button>
+        <button id="btn-sound" class="dock-btn" type="button" title="切换游戏音效" aria-label="关闭音效" aria-pressed="true">🔊 音效开</button>
+        </div>
+      </footer>
+    </div>
+
+  </div>
+
+  <script defer src="app.js"></script>
+</body>
+</html>

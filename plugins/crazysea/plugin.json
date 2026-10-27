@@ -1,0 +1,443 @@
+{
+  "kind": "plugin",
+  "apiVersion": 1,
+  "id": "plugin.crazysea",
+  "version": "1.1.0",
+  "minAppVersion": "0.3.2",
+  "name": "疯狂海世界",
+  "description": "主播拼命敲钉子盖海景房想下班，观众狂刷石头炸弹拆家不让走，榜一大哥刷海水过滤器暴风帮盖楼！",
+  "publisher": "猪大生态开发者",
+  "category": "stream",
+  "entry": "index.html",
+  "permissions": [
+    "storage",
+    "scene-events"
+  ],
+  "sceneSources": [
+    {
+      "id": "crazysea",
+      "name": "疯狂海世界",
+      "description": "直播间弹幕互动对抗：主播盖楼求下班 vs 观众狂轰滥炸拆家",
+      "entry": "index.html",
+      "width": 1080,
+      "height": 1920,
+      "runtime": "interactive",
+      "parameters": [
+        {
+          "key": "targetWood",
+          "label": "今日下班木头目标",
+          "type": "number",
+          "default": 100000,
+          "min": 1,
+          "max": 1000000,
+          "live": true,
+          "group": "下班目标"
+        },
+        {
+          "key": "woodBoatWood",
+          "label": "木船升级累计木头",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "max": 1000000,
+          "live": true,
+          "group": "建筑升级门槛"
+        },
+        {
+          "key": "cabinWood",
+          "label": "大木船／木屋升级累计木头",
+          "type": "number",
+          "default": 1000,
+          "min": 1,
+          "max": 1000000,
+          "live": true,
+          "group": "建筑升级门槛"
+        },
+        {
+          "key": "ironShipWood",
+          "label": "铁皮船升级累计木头",
+          "type": "number",
+          "default": 5000,
+          "min": 1,
+          "max": 1000000,
+          "live": true,
+          "group": "建筑升级门槛"
+        },
+        {
+          "key": "villaWood",
+          "label": "多层海景屋升级累计木头",
+          "type": "number",
+          "default": 10000,
+          "min": 1,
+          "max": 1000000,
+          "live": true,
+          "group": "建筑升级门槛"
+        },
+        {
+          "key": "cruiseWood",
+          "label": "大游轮升级累计木头",
+          "type": "number",
+          "default": 100000,
+          "min": 1,
+          "max": 1000000,
+          "live": true,
+          "group": "建筑升级门槛"
+        },
+        {
+          "key": "baseHitZoneWidth",
+          "label": "命中区起始宽度（%）",
+          "type": "number",
+          "default": 24,
+          "min": 0.1,
+          "max": 50,
+          "live": true,
+          "group": "绿色命中区"
+        },
+        {
+          "key": "minHitZoneWidth",
+          "label": "命中区最小宽度（%）",
+          "type": "number",
+          "default": 0.1,
+          "min": 0.1,
+          "max": 50,
+          "live": true,
+          "group": "绿色命中区"
+        },
+        {
+          "key": "stoneDamage",
+          "label": "丢石头扣木头数",
+          "type": "number",
+          "default": 5,
+          "min": 1,
+          "max": 500,
+          "live": true,
+          "group": "拆家伤害"
+        },
+        {
+          "key": "smallBombDamage",
+          "label": "小炸弹扣木头数",
+          "type": "number",
+          "default": 20,
+          "min": 1,
+          "max": 1000,
+          "live": true,
+          "group": "拆家伤害"
+        },
+        {
+          "key": "bigBombDamage",
+          "label": "大炸弹扣木头数",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "max": 10000,
+          "live": true,
+          "group": "拆家伤害"
+        },
+        {
+          "key": "filterWoodLv1",
+          "label": "1级过滤器帮盖木头数",
+          "type": "number",
+          "default": 4,
+          "min": 1,
+          "max": 500,
+          "live": true,
+          "group": "护航设施"
+        },
+        {
+          "key": "filterAutoUpgrade",
+          "label": "过滤器随刷随升级",
+          "type": "boolean",
+          "default": true,
+          "live": true,
+          "group": "护航设施"
+        },
+        {
+          "key": "inkDuration",
+          "label": "喷墨汁遮挡秒数",
+          "type": "number",
+          "default": 8,
+          "min": 1,
+          "max": 30,
+          "live": true,
+          "group": "整蛊干扰"
+        },
+        {
+          "key": "weedDuration",
+          "label": "丢海草缠绕秒数",
+          "type": "number",
+          "default": 5,
+          "min": 1,
+          "max": 30,
+          "live": true,
+          "group": "整蛊干扰"
+        },
+        {
+          "key": "soundVolume",
+          "label": "游戏音效音量",
+          "type": "number",
+          "default": 80,
+          "min": 0,
+          "max": 100,
+          "live": true,
+          "group": "音效与控制"
+        },
+        {
+          "key": "soundEnabled",
+          "label": "开启游戏音效",
+          "type": "boolean",
+          "default": true,
+          "live": true,
+          "group": "音效与控制"
+        },
+        {
+          "key": "autoTapSpeed",
+          "label": "主播自动敲钉子速度(次/秒)",
+          "type": "number",
+          "default": 1,
+          "min": 0,
+          "max": 10,
+          "live": true,
+          "group": "主播辅助"
+        }
+      ],
+      "events": [
+        {
+          "id": "stone",
+          "label": "丢石头",
+          "description": "抛物线砸木头，扣除木头数",
+          "operation": "subtract",
+          "amountLabel": "扣除木头",
+          "unit": "块",
+          "min": 1,
+          "max": 1000000,
+          "default": 5
+        },
+        {
+          "id": "bomb-small",
+          "label": "小炸弹",
+          "description": "小型火药桶爆炸，扣除木头数",
+          "operation": "subtract",
+          "amountLabel": "扣除木头",
+          "unit": "块",
+          "min": 1,
+          "max": 1000000,
+          "default": 20
+        },
+        {
+          "id": "bomb-big",
+          "label": "大炸弹",
+          "description": "中型水柱爆炸，扣除大量木头数",
+          "operation": "subtract",
+          "amountLabel": "扣除木头",
+          "unit": "块",
+          "min": 1,
+          "max": 1000000,
+          "default": 100
+        },
+        {
+          "id": "bomb-nuke",
+          "label": "终极核弹",
+          "description": "蘑菇云全屏幕警报，一键清零木头重置破木筏",
+          "operation": "effect",
+          "amountLabel": "威力",
+          "unit": "发",
+          "min": 1,
+          "max": 1000000,
+          "default": 1
+        },
+        {
+          "id": "filter",
+          "label": "海水过滤器",
+          "description": "召唤海水过滤器，暴风加木头自动搭建",
+          "operation": "add",
+          "amountLabel": "增加木头",
+          "unit": "块",
+          "min": 1,
+          "max": 1000000,
+          "default": 4
+        },
+        {
+          "id": "ink",
+          "label": "乌贼喷墨",
+          "description": "巨大乌贼跳出水面喷黑紫色墨汁遮挡画面",
+          "operation": "effect",
+          "amountLabel": "次数",
+          "unit": "次",
+          "min": 1,
+          "max": 1000000,
+          "default": 1
+        },
+        {
+          "id": "weed",
+          "label": "丢海草",
+          "description": "海藻缠绕在主播身上，阻止敲钉子",
+          "operation": "effect",
+          "amountLabel": "次数",
+          "unit": "次",
+          "min": 1,
+          "max": 1000000,
+          "default": 1
+        },
+        {
+          "id": "tap-nail",
+          "label": "敲钉子",
+          "description": "工人敲钉子堆木头",
+          "operation": "add",
+          "amountLabel": "增加木头",
+          "unit": "块",
+          "min": 1,
+          "max": 1000000,
+          "default": 1
+        },
+        {
+          "id": "smoke",
+          "label": "丢烟雾",
+          "description": "抛投浓烟遮天蔽日，指针速度减慢50%",
+          "operation": "effect",
+          "amountLabel": "持续时间",
+          "unit": "秒",
+          "min": 1,
+          "max": 1000000,
+          "default": 6
+        },
+        {
+          "id": "kelp-panel",
+          "label": "丢海带",
+          "description": "黏腻海带糊住钓鱼面板，遮蔽绿色命中区",
+          "operation": "effect",
+          "amountLabel": "持续时间",
+          "unit": "秒",
+          "min": 1,
+          "max": 1000000,
+          "default": 7
+        },
+        {
+          "id": "shrink-zone",
+          "label": "丢河豚",
+          "description": "刺刺河豚破坏命中区，缩小绿色命中范围",
+          "operation": "effect",
+          "amountLabel": "次数",
+          "unit": "次",
+          "min": 1,
+          "max": 1000000,
+          "default": 1
+        },
+        {
+          "id": "expand-zone",
+          "label": "丢海星",
+          "description": "幸运海星加持，扩大绿色命中范围",
+          "operation": "effect",
+          "amountLabel": "次数",
+          "unit": "次",
+          "min": 1,
+          "max": 1000000,
+          "default": 1
+        }
+      ],
+      "rules": [
+        {
+          "giftId": "2001",
+          "giftName": "小心心",
+          "eventId": "stone",
+          "amount": 5,
+          "delta": -5
+        },
+        {
+          "giftId": "2002",
+          "giftName": "棒棒糖",
+          "eventId": "bomb-small",
+          "amount": 20,
+          "delta": -20
+        },
+        {
+          "giftId": "2003",
+          "giftName": "能量饮料",
+          "eventId": "filter",
+          "amount": 4,
+          "delta": 4
+        },
+        {
+          "giftId": "2004",
+          "giftName": "墨镜",
+          "eventId": "ink",
+          "amount": 1,
+          "delta": 0
+        },
+        {
+          "giftId": "2005",
+          "giftName": "海藻球",
+          "eventId": "weed",
+          "amount": 1,
+          "delta": 0
+        },
+        {
+          "giftId": "2006",
+          "giftName": "大啤酒",
+          "eventId": "bomb-big",
+          "amount": 100,
+          "delta": -100
+        },
+        {
+          "giftId": "2007",
+          "giftName": "嘉年华",
+          "eventId": "bomb-nuke",
+          "amount": 1,
+          "delta": 0
+        },
+        {
+          "giftId": "2008",
+          "giftName": "烟雾弹",
+          "eventId": "smoke",
+          "amount": 6,
+          "delta": 0
+        },
+        {
+          "giftId": "2009",
+          "giftName": "绿海带",
+          "eventId": "kelp-panel",
+          "amount": 7,
+          "delta": 0
+        },
+        {
+          "giftId": "2010",
+          "giftName": "刺刺河豚",
+          "eventId": "shrink-zone",
+          "amount": 1,
+          "delta": 0
+        },
+        {
+          "giftId": "2011",
+          "giftName": "幸运海星",
+          "eventId": "expand-zone",
+          "amount": 1,
+          "delta": 0
+        }
+      ],
+      "themes": [
+        {
+          "id": "default",
+          "name": "末日海世界",
+          "description": "碧蓝海浪、生锈汽油桶与废弃轮胎木筏",
+          "accent": "#38bdf8"
+        },
+        {
+          "id": "sunset",
+          "name": "黄昏烈阳",
+          "description": "橘红夕阳、海面金光与炙热落日要塞",
+          "accent": "#fb923c"
+        },
+        {
+          "id": "cyber",
+          "name": "赛博深海",
+          "description": "深海夜光、机械浮岛与霓虹电路要塞",
+          "accent": "#a855f7"
+        }
+      ],
+      "defaultTheme": "default",
+      "completion": {
+        "text": "🎉 主播成功下班啦！",
+        "color": "#38bdf8"
+      }
+    }
+  ]
+}

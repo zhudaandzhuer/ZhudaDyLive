@@ -1,0 +1,13 @@
+{
+  "kind": "plugin",
+  "apiVersion": 1,
+  "id": "plugin.notes",
+  "version": "1.0.2",
+  "minAppVersion": "0.3.0",
+  "name": "直播备忘",
+  "description": "记下开播流程、话题与待办。关闭工作台后仍会保留，让每次开播都从容一点。",
+  "publisher": "猪大官方",
+  "category": "productivity",
+  "entry": "index.html",
+  "permissions": ["storage"]
+}

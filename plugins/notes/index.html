@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>直播备忘</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <span>直播备忘录</span>
+        <h1>把灵感，留在这里。</h1>
+        <p>开播流程、聊天话题、下次想做的事，都可以先记下来。</p>
+      </header>
+      <label for="note">我的直播备忘</label
+      ><textarea
+        id="note"
+        maxlength="200000"
+        placeholder="今天的开场话题…&#10;&#10;直播前记得…"
+        disabled
+      ></textarea>
+      <footer>
+        <span id="status" role="status">正在加载备忘…</span
+        ><button id="save" disabled>保存备忘</button>
+      </footer>
+    </main>
+    <script src="plugin.js"></script>
+  </body>
+</html>

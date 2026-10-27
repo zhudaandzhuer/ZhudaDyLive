@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>解锁挑战状态面板</title>
+    <link rel="stylesheet" href="status.css" />
+    <script src="status.js" defer></script>
+  </head>
+  <body>
+    <main class="status-panel">
+      <header><span id="title">解锁挑战</span><span id="mode">尚未启动</span></header>
+      <div class="count"><span id="label">剩余锁链</span><strong id="remaining">—</strong></div>
+      <div
+        class="track"
+        role="progressbar"
+        aria-label="剩余锁链比例"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div id="progress"></div>
+      </div>
+      <p id="notice">每一份礼物，都有戏。</p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>观众生存世界 · SVG 混战试玩</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/arena.js" defer></script>
+  </head>
+  <body>
+    <header class="lab-header">
+      <div><span class="brand">观众生存世界</span><span class="badge">SVG 混战原型</span></div>
+      <span id="connection">连接本机世界…</span>
+    </header>
+    <main class="lab">
+      <aside class="tools">
+        <section class="input-panel" aria-label="礼物来源">
+          <div class="eyebrow">礼物来源</div>
+          <div class="input-modes">
+            <button id="demo-mode" class="secondary">模拟试玩</button
+            ><button id="live-mode" class="secondary">真实直播</button>
+          </div>
+          <p id="input-status" role="status">正在读取工作台连接…</p>
+          <div id="live-settings" hidden>
+            <label>入场礼物<select id="join-gift"></select></label>
+            <label>抢镜礼物<select id="focus-gift"></select></label>
+            <button id="attach-live">接入当前直播间</button>
+            <small>其他礼物为本人加点。每份新增礼物随机加 1 点属性，入场和抢镜也只加点一次。</small>
+            <p id="live-summary"></p>
+            <div id="live-receipts" class="live-receipts" aria-label="直播礼物处理记录"></div>
+          </div>
+        </section>
+        <section id="simulation-tools" class="simulation-tools">
+          <div class="eyebrow">模拟礼物</div>
+          <h1>你的名字，<br />进入这片世界。</h1>
+          <p>人气票入场，礼物加点，小心心抢镜。所有角色由同一个本机进程结算。</p>
+          <label>试送玩家<select id="sender"></select></label
+          ><button id="new-player" class="secondary">新建试送玩家</button
+          ><label>玩家名称<input id="sender-name" maxlength="20" value="新玩家" /></label
+          ><label>模拟份数<input id="quantity" type="number" min="1" max="1000" value="1" /></label>
+          <div class="gift-buttons">
+            <button data-gift="join">人气票 · 入场</button
+            ><button data-gift="focus" class="secondary">小心心 · 抢镜 2 秒</button
+            ><button data-gift="buff" class="secondary">随机属性 +1</button>
+          </div>
+          <p id="notice" role="status" aria-live="polite">试玩使用模拟礼物，尚未接入直播礼物。</p>
+          <div class="lab-actions">
+            <button id="add-players" class="secondary">加入 8 名玩家</button
+            ><button id="reset" class="text-button">重置试玩</button>
+          </div>
+        </section>
+        <button id="pause" class="secondary">暂停世界</button>
+        <a href="/output" target="_blank" rel="noopener">打开纯游戏画面 ↗</a
+        ><small
+          >测试阶段最多 64 人。地图、角色、攻击和小地图均由 SVG 绘制。每份模拟礼物随机增加 1
+          点属性，暂未换算实际礼物价值。</small
+        >
+      </aside>
+      <section class="preview">
+        <div class="preview-heading"><span>混战世界</span><span id="world-status">—</span></div>
+        <div class="game" id="game">
+          <aside class="roster">
+            <div class="roster-heading"><span>生存榜</span><b id="alive-count">0</b></div>
+            <div id="players" class="players"></div>
+            <div class="roster-footer">每存活 30 秒记为一轮</div>
+          </aside>
+          <div class="world">
+            <svg
+              id="world"
+              viewBox="960 960 640 640"
+              role="img"
+              aria-label="多人 SVG 混战地图"
+            ></svg>
+            <div class="camera-label">
+              <span class="camera-dot"></span><span id="camera-label">等待玩家</span>
+            </div>
+            <svg id="minimap" viewBox="0 0 2560 2560" aria-label="世界小地图">
+              <rect width="2560" height="2560" fill="#56654f" />
+              <path
+                d="M0 1450 1280 1280 2560 990M1290 0 1280 1280 1370 2560"
+                stroke="#b3aa88"
+                stroke-width="80"
+                fill="none"
+              />
+              <circle cx="1280" cy="1280" r="300" fill="#9c9b7c" />
+              <g id="minimap-players"></g>
+              <rect
+                id="minimap-camera"
+                width="820"
+                height="820"
+                fill="none"
+                stroke="#fff"
+                stroke-width="24"
+              />
+            </svg>
+            <div class="empty" id="empty" hidden>世界正在等待下一位玩家</div>
+          </div>
+        </div>
+        <div class="preview-footer">
+          <span id="selection">选择玩家后，可在左侧试送礼物</span><span id="fps">—</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

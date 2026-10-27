@@ -1,0 +1,6 @@
+node_modules
+.local
+**/dist
+client/release
+package-lock.json
+client/public/generated

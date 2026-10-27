@@ -1,0 +1,10 @@
+{
+  "title": "锁链拟音",
+  "method": "原创程序合成链环金属碰撞与纯消融声",
+  "source": "scripts/chain-foley.ts",
+  "samples": "未使用外部采样或乐器音源",
+  "cues": {
+    "bind": "轻短金属链环碰撞",
+    "fracture": "嘶…（仅消融声）"
+  }
+}
